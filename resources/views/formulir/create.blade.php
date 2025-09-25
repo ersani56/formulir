@@ -161,7 +161,7 @@
                         <div>
                             <label for="ijazah" class="block text-sm font-medium text-gray-700 mb-2">
                                 Ijazah <span class="text-red-500">*</span>
-                                <span class="text-xs text-gray-500">(Dapat upload multiple file)</span>
+                                <span class="text-xs text-gray-500">(Ijazah SD s/d Ijazah Terakhir)</span>
                             </label>
                             <input type="file" id="ijazah" name="ijazah[]" multiple
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700"
@@ -178,7 +178,7 @@
                         <div>
                             <label for="transkrip_nilai" class="block text-sm font-medium text-gray-700 mb-2">
                                 Transkrip Nilai <span class="text-red-500">*</span>
-                                <span class="text-xs text-gray-500">(Dapat upload multiple file)</span>
+                                <span class="text-xs text-gray-500">(Transkrip SD s/d Ijazah Terakhir)</span>
                             </label>
                             <input type="file" id="transkrip_nilai" name="transkrip_nilai[]" multiple
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700"
@@ -249,7 +249,7 @@
 
             <!-- Footer Info -->
             <div class="mt-6 text-center text-sm text-gray-500">
-                <p>Formulir ini akan disimpan ke dalam database dan dapat dikelola melalui admin panel.</p>
+                <p>Formulir ini akan disimpan ke dalam database</p>
             </div>
         </div>
     </div>
