@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulir Pendaftaran</title>
+    <title>Formulir Isian PPPK Paruh Waktu Tahun 2025</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -13,7 +13,7 @@
             <!-- Header -->
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold text-gray-800 mb-2">FORMULIR PENDAFTARAN</h1>
-                <p class="text-gray-600">Isi formulir berikut dengan data yang benar dan lengkap</p>
+                <p class="text-gray-600">BKPSDM Kab. Tulang Bawang Barat</p>
             </div>
 
             <!-- Success Message -->
