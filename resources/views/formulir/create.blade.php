@@ -12,7 +12,7 @@
         <div class="max-w-4xl mx-auto">
             <!-- Header -->
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">FORMULIR PENDAFTARAN</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">FORMULIR PPPK PARUH WAKTU TAHUN 2025</h1>
                 <p class="text-gray-600">BKPSDM Kab. Tulang Bawang Barat</p>
             </div>
 
