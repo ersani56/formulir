@@ -8,26 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('formulirs', function (Blueprint $table) {
+        Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('nik', 16);
-            $table->enum('kelompok_jabatan', ['Tenaga Teknis', 'Tenaga Guru', 'Tenaga Kesehatan']);
-            $table->string('skck')->nullable();
-            $table->string('suket_sehat')->nullable();
-            $table->json('ijazah')->nullable(); // Untuk multiple files
-            $table->json('transkrip_nilai')->nullable(); // Untuk multiple files
-            $table->string('surat_pernyataan')->nullable();
-            $table->string('pas_foto')->nullable();
-            $table->string('foto_ktp')->nullable();
-            $table->string('email');
-            $table->string('no_whatsapp');
+            $table->morphs('tokenable');
+            $table->string('name');
+            $table->string('token', 64)->unique();
+            $table->text('abilities')->nullable();
+            $table->timestamp('last_used_at')->nullable();
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('formulirs');
+        Schema::dropIfExists('personal_access_tokens');
     }
 };
