@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -29,9 +30,15 @@ class User extends Authenticatable implements FilamentUser
         'password' => 'hashed',
     ];
 
-    public function canAccessFilament(): bool
+    /**
+     * Tentukan apakah user bisa akses panel Filament
+     */
+    public function canAccessPanel(Panel $panel): bool
     {
-        // Hanya user dengan role 'admin' yang bisa login
-        return $this->role === 'admin';
+        // Untuk test, izinkan semua user login
+        return true;
+
+        // Kalau mau pakai role:
+        // return $this->role === 'admin';
     }
 }
