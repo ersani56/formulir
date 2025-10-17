@@ -21,3 +21,17 @@ Route::get('/download-report', [ReportController::class, 'downloadReport'])->nam
 Route::get('/report', [ReportController::class, 'showReportPage'])->name('report.page');
 Route::post('/generate-report', [ReportController::class, 'generateReport'])->name('generate.report');
 Route::get('/api/statistics', [ReportController::class, 'getStatistics'])->name('api.statistics');
+
+// Test email route
+Route::get('/test-email', function () {
+    try {
+        Mail::raw('Test email dari BKPSDM System', function ($message) {
+            $message->to('test@example.com')
+                    ->subject('Test Email dari Mailtrap');
+        });
+
+        return 'Email berhasil dikirim! Cek di Mailtrap Inbox.';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});

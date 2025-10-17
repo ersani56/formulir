@@ -136,13 +136,13 @@
 
         <div class="info-box">
             <h3>ℹ️ Informasi</h3>
-            <p>Dokumen yang sudah diupload dapat diakses melalui sistem BKPSDM.</p>
-            <p>Jika ada pertanyaan atau kendala, silakan hubungi administrator sistem.</p>
+            <p>Dokumen yang sudah diupload dapat diakses melalui sistem https://form.bkdtulangbawangbarat.com/upload-arsip</p>
+            <p>Jika ada pertanyaan atau kendala, silakan hubungi 08537757555 (WA Only)</p>
         </div>
     </div>
 
     <div class="footer">
-        <p>&copy; {{ date('Y') }} BKPSDM - Badan Kepegawaian dan Pengembangan Sumber Daya Manusia</p>
+        <p>&copy; {{ date('Y') }} Ersani - All Rights Reserved</p>
         <p>Email ini dikirim secara otomatis, mohon tidak membalas email ini.</p>
     </div>
 </body>

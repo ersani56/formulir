@@ -123,11 +123,12 @@ class ReportController extends Controller
     public function getStatistics()
     {
         $totalPegawai = ArsipPeg::count();
+
         $totalWithFiles = ArsipPeg::where(function($query) {
             $query->whereNotNull('drh_path')
-                  ->orWhereNotNull('skcpns_path')
-                  ->orWhereNotNull('skpns_path')
-                  ->orWhereNotNull('spmt_path');
+                ->orWhereNotNull('skcpns_path')
+                ->orWhereNotNull('skpns_path')
+                ->orWhereNotNull('spmt_path');
         })->count();
 
         $fileStats = [
@@ -137,10 +138,20 @@ class ReportController extends Controller
             'spmt' => ArsipPeg::whereNotNull('spmt_path')->count(),
         ];
 
-        $recentUploads = ArsipPeg::with(['files'])
-            ->orderBy('updated_at', 'desc')
+        $recentUploads = ArsipPeg::orderBy('updated_at', 'desc')
             ->limit(10)
-            ->get();
+            ->get()
+            ->map(function($item) {
+                return [
+                    'nip' => $item->nip,
+                    'drh_path' => $item->drh_path,
+                    'skcpns_path' => $item->skcpns_path,
+                    'skpns_path' => $item->skpns_path,
+                    'spmt_path' => $item->spmt_path,
+                    'updated_at' => $item->updated_at,
+                    'created_at' => $item->created_at
+                ];
+            });
 
         return response()->json([
             'total_pegawai' => $totalPegawai,

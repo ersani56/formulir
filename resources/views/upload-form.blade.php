@@ -28,7 +28,7 @@
     <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl">
         <div class="text-center mb-8">
             <h1 class="text-2xl font-bold text-gray-800">Formulir Unggah Dokumen Pegawai</h1>
-            <p class="text-gray-600 mt-2">BKPSDM - Badan Kepegawaian dan Pengembangan Sumber Daya Manusia</p>
+            <p class="text-gray-600 mt-2">BKPSDM - Kabupaten Tulang Bawang Barat</p>
         </div>
 
         <!-- Notifications -->
