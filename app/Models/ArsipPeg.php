@@ -12,6 +12,7 @@ class ArsipPeg extends Model
 
     protected $fillable = [
         'nip',
+        'email',
         'drh_path',
         'skcpns_path',
         'skpns_path',

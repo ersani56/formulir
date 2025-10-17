@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
-use App\Filament\Pages\UploadArsipPeg;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FormulirPublicController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -14,8 +15,9 @@ Route::post('/formulir', [FormulirPublicController::class, 'store'])->name('form
 
 Route::get('/upload-arsip', [UploadController::class, 'showForm'])->name('upload.form');
 Route::post('/upload-arsip', [UploadController::class, 'upload'])->name('upload.submit');
+Route::get('/check-files/{nip}', [UploadController::class, 'checkFiles'])->name('check.files');
+Route::get('/download-report', [ReportController::class, 'downloadReport'])->name('download.report');
 
-// Redirect root to upload form
-Route::get('/', function () {
-    return redirect('/upload-arsip');
-});
+Route::get('/report', [ReportController::class, 'showReportPage'])->name('report.page');
+Route::post('/generate-report', [ReportController::class, 'generateReport'])->name('generate.report');
+Route::get('/api/statistics', [ReportController::class, 'getStatistics'])->name('api.statistics');
