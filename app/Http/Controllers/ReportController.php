@@ -44,23 +44,37 @@ class ReportController extends Controller
 
     private function exportPDF($data, $startDate, $endDate)
     {
-        $mpdf = new \Mpdf\Mpdf([
-            'mode' => 'utf-8',
-            'format' => 'A4',
-            'orientation' => 'L'
-        ]);
+        // Pastikan mpdf terinstall
+        if (!class_exists('Mpdf\Mpdf')) {
+            throw new \Exception('MPDF library not installed. Run: composer require mpdf/mpdf');
+        }
 
-        $html = view('reports.pdf', [
-            'data' => $data,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'generatedAt' => now()->format('d/m/Y H:i:s')
-        ])->render();
+        try {
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4-L', // Landscape
+                'orientation' => 'L'
+            ]);
 
-        $mpdf->WriteHTML($html);
+            $html = view('reports.pdf', [
+                'data' => $data,
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'generatedAt' => now()->format('d/m/Y H:i:s')
+            ])->render();
 
-        $filename = 'report_arsip_pegawai_' . now()->format('Y_m_d_His') . '.pdf';
-        return $mpdf->Output($filename, 'D');
+            $mpdf->WriteHTML($html);
+
+            $filename = 'report_arsip_pegawai_' . now()->format('Y_m_d_His') . '.pdf';
+
+            return response($mpdf->Output($filename, 'S'))
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        } catch (\Exception $e) {
+            \Log::error('PDF Generation Error: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
     private function exportExcel($data, $startDate, $endDate)

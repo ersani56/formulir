@@ -6,6 +6,32 @@
     <title>Laporan Arsip Pegawai</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Prevent chart overflow */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+
+        /* Ensure canvas doesn't cause scrolling */
+        canvas {
+            display: block;
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        /* Limit recent uploads height */
+        #recentUploads {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto p-6">
@@ -42,16 +68,18 @@
             </div>
         </div>
 
-        <!-- Charts -->
+        <!-- Charts Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div class="bg-white rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold mb-4">Distribusi Jenis Dokumen</h3>
-                <canvas id="documentChart" height="250"></canvas>
+                <div style="height: 250px; position: relative;">
+                    <canvas id="documentChart" height="250"></canvas>
+                </div>
             </div>
             <div class="bg-white rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold mb-4">Upload 10 Terakhir</h3>
-                <div id="recentUploads" class="space-y-3">
-                    <!-- Recent uploads will be loaded here -->
+                <div id="recentUploads" class="space-y-3 max-h-64 overflow-y-auto">
+                    <div class="text-center text-gray-500 py-4">Loading...</div>
                 </div>
             </div>
         </div>
@@ -88,103 +116,26 @@
     </div>
 
     <script>
-        // Load statistics
-        document.addEventListener('DOMContentLoaded', function() {
-            loadStatistics();
-        });
+        // Global variable untuk chart instance
+        let documentChartInstance = null;
 
-        function loadStatistics() {
-                fetch('/api/statistics')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Statistics data:', data); // Debug log
+        // Function untuk update chart
+        function updateChart(fileStats) {
+            const ctx = document.getElementById('documentChart');
 
-                        // Update statistics
-                        document.getElementById('totalPegawai').textContent = data.total_pegawai;
-                        document.getElementById('totalWithFiles').textContent = data.total_with_files;
-
-                        const totalFiles = data.file_stats.drh + data.file_stats.skcpns + data.file_stats.skpns + data.file_stats.spmt;
-                        document.getElementById('totalFiles').textContent = totalFiles;
-
-                        const completionRate = data.total_pegawai > 0 ?
-                            Math.round((data.total_with_files / data.total_pegawai) * 100) : 0;
-                        document.getElementById('completionRate').textContent = completionRate + '%';
-
-                        // Update chart
-                        updateChart(data.file_stats);
-
-                        // Update recent uploads
-                        updateRecentUploads(data.recent_uploads);
-                    })
-                    .catch(error => {
-                        console.error('Error loading statistics:', error);
-                        // Fallback values
-                        document.getElementById('totalPegawai').textContent = 'Error';
-                        document.getElementById('totalWithFiles').textContent = 'Error';
-                        document.getElementById('totalFiles').textContent = 'Error';
-                        document.getElementById('completionRate').textContent = 'Error';
-                    });
+            if (!ctx) {
+                console.error('Chart canvas element not found');
+                return;
             }
 
-            function updateRecentUploads(uploads) {
-                const container = document.getElementById('recentUploads');
-                container.innerHTML = '';
-
-                if (!uploads || uploads.length === 0) {
-                    container.innerHTML = '<div class="text-center text-gray-500 py-4">Tidak ada data upload terbaru</div>';
-                    return;
-                }
-
-                uploads.forEach(upload => {
-                    const item = document.createElement('div');
-                    item.className = 'flex justify-between items-center p-3 border border-gray-200 rounded-lg';
-
-                    // Hitung jumlah file yang ada
-                    const fileCount = [
-                        upload.drh_path,
-                        upload.skcpns_path,
-                        upload.skpns_path,
-                        upload.spmt_path
-                    ].filter(path => path !== null && path !== '').length;
-
-                    // Format tanggal
-                    const uploadDate = new Date(upload.updated_at);
-                    const formattedDate = uploadDate.toLocaleDateString('id-ID', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-
-                    item.innerHTML = `
-                        <div class="flex-1">
-                            <div class="font-medium text-sm">${upload.nip}</div>
-                            <div class="text-xs text-gray-500 mt-1">${fileCount} file(s) uploaded</div>
-                        </div>
-                        <div class="text-xs text-gray-500 text-right">
-                            ${formattedDate}
-                        </div>
-                    `;
-
-                    container.appendChild(item);
-                });
+            // Destroy existing chart jika ada
+            if (documentChartInstance) {
+                documentChartInstance.destroy();
+                documentChartInstance = null;
             }
 
-            function updateChart(fileStats) {
-                const ctx = document.getElementById('documentChart');
-
-                // Destroy existing chart if any
-                if (window.documentChartInstance) {
-                    window.documentChartInstance.destroy();
-                }
-
-                window.documentChartInstance = new Chart(ctx, {
+            try {
+                documentChartInstance = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: ['DRH', 'SKCPNS', 'SKPNS', 'SPMT'],
@@ -222,27 +173,134 @@
                                     precision: 0
                                 }
                             }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
                         }
                     }
                 });
+                console.log('Chart updated successfully');
+            } catch (error) {
+                console.error('Chart update error:', error);
+            }
+        }
+
+        function updateRecentUploads(uploads) {
+            const container = document.getElementById('recentUploads');
+
+            if (!container) {
+                console.error('Recent uploads container not found');
+                return;
             }
 
-            // Initialize on page load
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log('Report page loaded'); // Debug log
-                loadStatistics();
+            // Clear container
+            container.innerHTML = '';
 
-                // Auto set date range to last 30 days
-                const endDate = new Date().toISOString().split('T')[0];
-                const startDate = new Date();
-                startDate.setDate(startDate.getDate() - 30);
+            if (!uploads || uploads.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-4">Tidak ada data upload terbaru</div>';
+                return;
+            }
 
-                const startDateInput = document.querySelector('input[name="start_date"]');
-                const endDateInput = document.querySelector('input[name="end_date"]');
+            uploads.forEach((upload, index) => {
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50';
 
-                if (startDateInput) startDateInput.value = startDate.toISOString().split('T')[0];
-                if (endDateInput) endDateInput.value = endDate;
+                // Hitung jumlah file yang ada
+                const fileCount = [
+                    upload.drh_path,
+                    upload.skcpns_path,
+                    upload.skpns_path,
+                    upload.spmt_path
+                ].filter(path => path !== null && path !== '' && path !== undefined).length;
+
+                // Format tanggal
+                const uploadDate = new Date(upload.updated_at);
+                const formattedDate = uploadDate.toLocaleDateString('id-ID', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                item.innerHTML = `
+                    <div class="flex-1">
+                        <div class="font-medium text-sm text-gray-800">${upload.nip}</div>
+                        <div class="text-xs text-gray-500 mt-1">${fileCount} file(s)</div>
+                    </div>
+                    <div class="text-xs text-gray-500 text-right">
+                        <div>${formattedDate.split(',')[0]}</div>
+                        <div class="text-gray-400">${formattedDate.split(',')[1] ? formattedDate.split(',')[1].trim() : ''}</div>
+                    </div>
+                `;
+
+                container.appendChild(item);
             });
+        }
+
+        function loadStatistics() {
+            console.log('Loading statistics...');
+
+            fetch('/api/statistics')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Statistics data received:', data);
+
+                    // Update statistics
+                    document.getElementById('totalPegawai').textContent = data.total_pegawai;
+                    document.getElementById('totalWithFiles').textContent = data.total_with_files;
+
+                    const totalFiles = data.file_stats.drh + data.file_stats.skcpns + data.file_stats.skpns + data.file_stats.spmt;
+                    document.getElementById('totalFiles').textContent = totalFiles;
+
+                    const completionRate = data.total_pegawai > 0 ?
+                        Math.round((data.total_with_files / data.total_pegawai) * 100) : 0;
+                    document.getElementById('completionRate').textContent = completionRate + '%';
+
+                    // Update chart
+                    updateChart(data.file_stats);
+
+                    // Update recent uploads
+                    updateRecentUploads(data.recent_uploads);
+                })
+                .catch(error => {
+                    console.error('Error loading statistics:', error);
+                    document.getElementById('recentUploads').innerHTML =
+                        '<div class="text-center text-red-500 py-4">Error loading data</div>';
+                });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Report page loaded');
+            loadStatistics();
+
+            // Auto set date range to last 30 days
+            const endDate = new Date().toISOString().split('T')[0];
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+
+            const startDateInput = document.querySelector('input[name="start_date"]');
+            const endDateInput = document.querySelector('input[name="end_date"]');
+
+            if (startDateInput) startDateInput.value = startDate.toISOString().split('T')[0];
+            if (endDateInput) endDateInput.value = endDate;
+        });
+
+        // Cleanup saat page unload
+        window.addEventListener('beforeunload', function() {
+            if (documentChartInstance) {
+                documentChartInstance.destroy();
+                documentChartInstance = null;
+            }
+        });
     </script>
 </body>
 </html>
