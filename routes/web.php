@@ -35,3 +35,7 @@ Route::get('/test-email', function () {
         return 'Error: ' . $e->getMessage();
     }
 });
+
+Route::get('/upload-arsip', function () {
+    return response()->view('info-ditutup');
+});
